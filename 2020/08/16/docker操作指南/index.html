@@ -325,16 +325,14 @@
 <p>注:这里的<code>-d</code>为指定网络的类型</p>
 <h2 id="4-数据卷"><a href="#4-数据卷" class="headerlink" title="4. 数据卷"></a>4. 数据卷</h2><p>数据卷一般用于数据持久化,下面以dockerhub官方的mysql镜像为例,</p>
 <p>查看mysql的dockerfile可以看到<code>VOLUME /var/lib/mysql</code>这一行,说明mysql将数据存储在容器中的<code>/var/lib/mysql</code>目录下,并自动挂载到一个主机的目录可以<code>inspect</code>容器或者volume(启动一个mysql容器会产生一个volume,可以用docker volume ls查看)就可以看到详细的目录.但是自动生成的volume名字十分冗长,</p>
-<p><strong>修改volume的名字</strong></p>
-<p><code>docker run --name mysql1 -d -v mysql_v_name:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=1 mysql</code></p>
+<h3 id="修改volume的名字"><a href="#修改volume的名字" class="headerlink" title="修改volume的名字"></a>修改volume的名字</h3><p><code>docker run --name mysql1 -d -v mysql_v_name:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=1 mysql</code></p>
 <p>上面的命令是常见的启动mysql容器的命令,其中<code>-v mysql_v_name:/var/lib/mysql</code>命令指定了本地的挂载点<code>:</code>前面就是本地的目录,后面就是容器里的目录(可以通过dockerfile查看),相当于重命名</p>
 <p>通过inspect可知道全路径为:<code>&quot;/var/lib/docker/volumes/mysql_v_name/_data&quot;</code></p>
 <p><strong>这样的优点</strong></p>
 <p>创建第二个容器</p>
 <p><code>docker run --name mysql2 -d -v mysql_v_name:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=1 mysql</code></p>
 <p>注意这里的<code>-v</code>后面指定的名字是前一个容器的挂载点,这样一来,前一个容器删除后,第二个容器可以接着使用第一个容器的数据.</p>
-<p><strong>共享主机的文件夹</strong></p>
-<p>注意一个原则,我们尽量不要在容器里面操作,应当在外面通过命令来操控容器,通常情况下,容器是不带vim或其他文本编辑工具的,所以一种有效的的办法是通过主机和容器共享一个文件夹,这样一来就可以在主机里通过vim等工具来编写代码.</p>
+<h3 id="共享主机的文件夹"><a href="#共享主机的文件夹" class="headerlink" title="共享主机的文件夹"></a>共享主机的文件夹</h3><p>注意一个原则,我们尽量不要在容器里面操作,应当在外面通过命令来操控容器,通常情况下,容器是不带vim或其他文本编辑工具的,所以一种有效的的办法是通过主机和容器共享一个文件夹,这样一来就可以在主机里通过vim等工具来编写代码.</p>
 <p><code>docker run --name test -d -v /home/kainhuck/Documents/PyCode:/temp/PyCode python:3.7</code></p>
 <p>这里创建一个Python3.7的容器,并将本地文件夹<code>/home/kainhuck/Documents/PyCode</code>关联到容器里的<code>/temp/PyCode</code>目录.</p>
 <p>这种方式关联的文件相当于同一个文件,操作均为同步,里面修改,外面也会修改.</p>
